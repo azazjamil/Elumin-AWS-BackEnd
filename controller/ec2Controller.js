@@ -1,4 +1,4 @@
-const ec2 = require("../data files/amazonEC2.json");
+const ec2 = require("../data/amazonEC2.json");
 const async = require("../middleware/async");
 const _ = require("lodash");
 

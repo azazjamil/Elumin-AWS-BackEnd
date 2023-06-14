@@ -1,4 +1,4 @@
-const workSpace = require("../data files/amazon workspaces.json");
+const workSpace = require("../data/amazon workspaces.json");
 const async = require("../middleware/async");
 const _ = require("lodash");
 

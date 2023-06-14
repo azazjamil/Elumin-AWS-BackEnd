@@ -1,4 +1,4 @@
-const appStream = require("../data files/amazon appstream.json");
+const appStream = require("../data/amazon appstream.json");
 const async = require("../middleware/async");
 const _ = require("lodash");
 
