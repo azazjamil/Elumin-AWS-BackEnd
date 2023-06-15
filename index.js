@@ -6,6 +6,9 @@ const ec2Routes = require("./routes/ec2Route");
 const appStreamRoutes = require("./routes/appStreamRoute");
 const workSpace = require("./routes/workSpaceRoute");
 const filesRoutes = require("./routes/files");
+const userRoutes = require("./routes/userRoutes");
+const authenticate = require("./middleware/authMiddleware");
+const errorHandler = require("./middleware/errorMiddleware");
 
 const corsOptions = {
   origin: "*",
@@ -24,6 +27,17 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send({ message: "hello from api" });
 });
+
+app.use(errorHandler);
+
+app.get("/session", authenticate, (req, res) => {
+  res.status(200).send({
+    error: false,
+    data: "session is active",
+  });
+});
+
+app.use("/user", userRoutes);
 
 app.use("/files", filesRoutes);
 
