@@ -2,13 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const bodyParser = require("body-parser");
-const ec2Routes = require("./routes/ec2Route");
-const appStreamRoutes = require("./routes/appStreamRoute");
-const workSpace = require("./routes/workSpaceRoute");
-const filesRoutes = require("./routes/files");
-const userRoutes = require("./routes/userRoutes");
-const authenticate = require("./middleware/authMiddleware");
+
 const errorHandler = require("./middleware/errorMiddleware");
+const routes = require("./routes");
 
 const corsOptions = {
   origin: "*",
@@ -24,28 +20,8 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.send({ message: "hello from api" });
-});
-
+app.use(routes);
 app.use(errorHandler);
-
-app.get("/session", authenticate, (req, res) => {
-  res.status(200).send({
-    error: false,
-    data: "session is active",
-  });
-});
-
-app.use("/user", userRoutes);
-
-app.use("/files", filesRoutes);
-
-app.use("/ec2Routes", ec2Routes);
-
-app.use("/appStreamRoutes", appStreamRoutes);
-
-app.use("/workSpaceRoutes", workSpace);
 
 const PORT = process.env.PORT || 4000;
 

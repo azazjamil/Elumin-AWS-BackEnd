@@ -16,7 +16,6 @@ function authenticate(req, res, next) {
     req.user = decoded;
     next();
   } catch (err) {
-    res.send(err);
     next(err);
   }
 }

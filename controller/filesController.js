@@ -1,16 +1,19 @@
 const fs = require("fs");
 const path = require("path");
 const uploader = require("huge-uploader-nodejs");
-const directoryPath = "./data/";
+const deleteUnmentionedFiles = require("../helper/cleandirectory");
 
+const directoryPath = "./data/";
 const mentionedFiles = {
-  "/data/amazon appstream.json": true,
-  "/data/amazon workspaces.json": true,
-  "/data/amazonEC2.json": true,
+  "data\\amazon appstream.json": true,
+  "data\\amazon workspaces.json": true,
+  "data\\amazonEC2.json": true,
 };
 
 const getFiles = async (req, res) => {
   try {
+    deleteUnmentionedFiles(directoryPath, mentionedFiles);
+
     const files = await fs.promises.readdir(directoryPath);
     const avaiableFiles = [];
 
@@ -133,4 +136,15 @@ const uploadFiles = async (req, res) => {
   });
 };
 
-module.exports = { getFiles, uploadFiles };
+const cleanDirectory = async (req, res) => {
+  try {
+    deleteUnmentionedFiles(directoryPath, mentionedFiles);
+    res
+      .status(200)
+      .send({ message: "directory is clean no unwanted files are present" });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports = { getFiles, uploadFiles, cleanDirectory };

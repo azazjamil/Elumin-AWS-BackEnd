@@ -24,6 +24,31 @@ function getAllFiles(directoryPath) {
   return files;
 }
 
+function getAllDirectories(directoryPath) {
+  const entries = fs.readdirSync(directoryPath);
+  const directories = [];
+
+  entries.forEach((entry) => {
+    const entryPath = path.join(directoryPath, entry);
+    const stat = fs.statSync(entryPath);
+
+    if (stat.isDirectory()) {
+      directories.push(entryPath);
+    }
+  });
+
+  return directories;
+}
+
+function deleteDirectories(directoryPath) {
+  const directories = getAllDirectories(directoryPath);
+
+  directories.forEach((directory) => {
+    fs.rmdirSync(directory, { recursive: true });
+    console.log(`Deleted directory: ${directory}`);
+  });
+}
+
 // Function to delete files or directories not mentioned in the object
 module.exports = function deleteUnmentionedFiles(
   directoryPath,
@@ -45,4 +70,6 @@ module.exports = function deleteUnmentionedFiles(
       }
     }
   });
+
+  deleteDirectories(directoryPath);
 };

@@ -7,7 +7,7 @@ const secretKey = process.env.JWT_SECRET;
 
 function generateToken(payload) {
   try {
-    return jwt.sign(payload, secretKey, { expiresIn: "1h" });
+    return jwt.sign(payload, secretKey, { expiresIn: "1d" });
   } catch (error) {
     // Handle token generation error
     throw new Error("Token generation failed");
