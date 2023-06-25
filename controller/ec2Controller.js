@@ -21,8 +21,6 @@ const getSku = async(async (req, res) => {
   if (matchingObjects) {
     res.send(matchingObjects);
   }
-
-  res.send(null);
 });
 
 const getNextValue = async (req, res) => {

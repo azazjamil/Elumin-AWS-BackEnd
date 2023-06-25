@@ -3,18 +3,21 @@ const cors = require("cors");
 const app = express();
 const bodyParser = require("body-parser");
 
+
 const errorHandler = require("./middleware/errorMiddleware");
 const routes = require("./routes");
 
+app.use(bodyParser.raw({ type: "application/octet-stream", limit: "100mb" }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
 const corsOptions = {
   origin: "*",
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  preflightContinue: false,
+  allowedHeaders: "Content-Type, Authorization",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
 };
 
 app.use(cors(corsOptions));
-
-app.use(bodyParser.raw({ type: "application/octet-stream", limit: "100mb" }));
 
 app.use(express.json());
 
