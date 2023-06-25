@@ -3,7 +3,15 @@ const async = require("../middleware/async");
 const _ = require("lodash");
 
 const getSku = async(async (req, res) => {
-  const { license, bundleGroup, vcpu, memoryGib, storage, memory } = req.body;
+  const {
+    license,
+    bundleGroup,
+    vcpu,
+    operatingSystem,
+    storage,
+    memory,
+    groupDescription,
+  } = req.body;
 
   const matchingSKU = _.findKey(workSpace.products, (product) => {
     const attributes = product.attributes;
@@ -11,8 +19,9 @@ const getSku = async(async (req, res) => {
       attributes.license === license &&
       attributes.bundleGroup === bundleGroup &&
       attributes.vcpu === vcpu &&
-      attributes.memoryGib === memoryGib &&
+      attributes.operatingSystem === operatingSystem &&
       attributes.storage === storage &&
+      attributes.groupDescription === groupDescription &&
       attributes.memory === memory
     );
   });
@@ -25,15 +34,26 @@ const getSku = async(async (req, res) => {
   res.send(matchingObjects);
 });
 
-const getUniqueValue = async(async (req, res) => {
+const getUniqueValue = async (req, res) => {
   const attribute = req.body.attribute;
+  const timeStamp = req.body.timeStamp;
+
+  if (!workSpace.products || typeof workSpace.products !== "object") {
+    res.status(400).send("Products not found or invalid data");
+    return;
+  }
+
+  const productsArray = Object.values(workSpace.products);
+  const filteredProducts = productsArray.filter(
+    (product) => product.attributes.groupDescription === timeStamp
+  );
 
   const uniqueValues = _.uniq(
-    _.map(workSpace.products, (product) => product.attributes[attribute])
+    _.map(filteredProducts, (product) => product.attributes[attribute])
   );
 
   res.status(200).send(uniqueValues);
-});
+};
 
 const getNextValue = async (req, res) => {
   const { attribute, values } = req.body;
