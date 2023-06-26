@@ -19,7 +19,7 @@ const sendEmailWithAttachment = async(async (req, res) => {
   // Define the file path and name
   const filePath = path.join(__dirname, "pdfs");
   console.log(__dirname);
-  const fileName = "document.pdf";
+  const fileName = "pricing.pdf";
   const fullPath = path.join(filePath, fileName);
 
   try {
@@ -47,14 +47,14 @@ const sendEmailWithAttachment = async(async (req, res) => {
 
   // Define the email details
   let mailOptions = {
-    from: "azazjamil99@gmail.com",
+    from: "admin@elumin.com",
     to: email,
     subject: "AWS pricing",
     text: "Please find the attached PDF file.",
     attachments: [
       {
-        filename: "document.pdf",
-        path: `${filePath}/document.pdf`,
+        filename: "pricing.pdf",
+        path: `${filePath}/pricing.pdf`,
       },
     ],
   };
