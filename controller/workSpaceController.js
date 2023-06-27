@@ -2,37 +2,111 @@ const workSpace = require("../data/amazon workspaces.json");
 const async = require("../middleware/async");
 const _ = require("lodash");
 
-const getSku = async(async (req, res) => {
+const getSku = async (req, res) => {
   const {
     license,
     bundleGroup,
     vcpu,
-    operatingSystem,
     storage,
     memory,
-    groupDescription,
+    operatingSystem,
+    runningMode,
+    group,
   } = req.body;
+  if (operatingSystem === "Workspaces Core") {
+    operatingSystem === "Any";
+  }
+  if (runningMode === "AlwaysOn") {
+    const matchingSKU = _.findKey(workSpace.products, (product) => {
+      const attributes = product.attributes;
+      return (
+        attributes.license === license &&
+        attributes.bundleGroup === bundleGroup &&
+        attributes.vcpu === vcpu &&
+        attributes.storage === storage &&
+        attributes.memory === memory &&
+        attributes.operatingSystem === operatingSystem &&
+        attributes.resourceType !== "Software" &&
+        attributes.runningMode === runningMode
+      );
+    });
 
-  const matchingSKU = _.findKey(workSpace.products, (product) => {
-    const attributes = product.attributes;
-    return (
-      attributes.license === license &&
-      attributes.bundleGroup === bundleGroup &&
-      attributes.vcpu === vcpu &&
-      attributes.operatingSystem === operatingSystem &&
-      attributes.storage === storage &&
-      attributes.groupDescription === groupDescription &&
-      attributes.memory === memory
+    const matchingObjects = _.filter(
+      workSpace.terms.OnDemand,
+      (product, key) => key === matchingSKU
     );
-  });
 
-  const matchingObjects = _.filter(
-    workSpace.terms.OnDemand,
-    (product, key) => key === matchingSKU
-  );
+    res.send(matchingObjects);
+  }
+  if (runningMode === "AutoStop") {
+    const matchingSKUs = _.filter(workSpace.products, (product) => {
+      const attributes = product.attributes;
+      return (
+        attributes.license === license &&
+        attributes.bundleGroup === bundleGroup &&
+        attributes.vcpu === vcpu &&
+        attributes.storage === storage &&
+        attributes.memory === memory &&
+        attributes.operatingSystem === operatingSystem &&
+        // attributes.resourceType !== "Software" &&
+        attributes.runningMode === "AutoStop"
+      );
+    });
 
-  res.send(matchingObjects);
-});
+    const matchingObjects = _.filter(workSpace.terms.OnDemand, (term, key) =>
+      matchingSKUs.some((sku) => sku.sku === key)
+    );
+    var price;
+    var price1;
+    for (const obj of matchingObjects) {
+      findDescriptionAndUSD(obj);
+    }
+    function findDescriptionAndUSD(obj) {
+      if (typeof obj === "object") {
+        // if ("description" in obj) {
+        // Apply your condition on the description value
+        // if (
+        // obj.description.includes("month-Hourly") ||
+        // obj.description.includes("per month") ||
+        //   obj.description.toLowerCase().includes("month")
+        // ) {
+        // console.log("Description:", obj.description);
+        // console.log(price);
+        //   monthlyPrice = price;
+        //   console.log(monthlyPrice);
+        // } else if (
+        // obj.description.includes("hour-Hourly") ||
+        // obj.description.includes("per hour") ||
+        //   obj.description.toLowerCase().includes("hour")
+        // ) {
+        // console.log("Description:", obj.description);
+        // console.log(price);
+        //     hourlyPrice = price;
+        //     console.log(hourlyPrice);
+        //   } else {
+        //     price = null;
+        //   }
+        // }
+        if ("USD" in obj) {
+          if (!price) {
+            price = obj.USD;
+          } else {
+            price1 = obj.USD;
+          }
+        }
+
+        for (const key in obj) {
+          findDescriptionAndUSD(obj[key]);
+        }
+      }
+    }
+    const data = {
+      price: price,
+      price1: price1,
+    };
+    res.send(data);
+  }
+};
 
 const getUniqueValue = async (req, res) => {
   const attribute = req.body.attribute;
@@ -49,7 +123,7 @@ const getUniqueValue = async (req, res) => {
   );
 
   const uniqueValues = _.uniq(
-    _.map(filteredProducts, (product) => product.attributes[attribute])
+    _.map(productsArray, (product) => product.attributes[attribute])
   );
 
   res.status(200).send(uniqueValues);
